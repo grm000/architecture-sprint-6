@@ -1,0 +1,73 @@
+Можем наблюдать как с увеличением нагрузки, происходит автоскейлинг с распределением нагрузки (обратить внимание на memory и replicas)
+
+PS C:\WINDOWS\system32> kubectl get hpa
+NAME               REFERENCE                 TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
+scaletestapp-hpa   Deployment/scaletestapp   memory: 73%/80%   1         10        1          23m
+PS C:\WINDOWS\system32> kubectl top pod
+NAME                            CPU(cores)   MEMORY(bytes)
+scaletestapp-54f6c4f448-49d8l   24m          17Mi
+PS C:\WINDOWS\system32> kubectl get hpa
+NAME               REFERENCE                 TARGETS            MINPODS   MAXPODS   REPLICAS   AGE
+scaletestapp-hpa   Deployment/scaletestapp   memory: 172%/80%   1         10        1          24m
+PS C:\WINDOWS\system32> kubectl top pod
+NAME                            CPU(cores)   MEMORY(bytes)
+scaletestapp-54f6c4f448-49d8l   24m          17Mi
+PS C:\WINDOWS\system32> kubectl get hpa
+NAME               REFERENCE                 TARGETS            MINPODS   MAXPODS   REPLICAS   AGE
+scaletestapp-hpa   Deployment/scaletestapp   memory: 172%/80%   1         10        1          24m
+PS C:\WINDOWS\system32> kubectl get hpa
+NAME               REFERENCE                 TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
+scaletestapp-hpa   Deployment/scaletestapp   memory: 14%/80%   1         10        3          26m
+PS C:\WINDOWS\system32> kubectl top pod
+NAME                            CPU(cores)   MEMORY(bytes)
+scaletestapp-54f6c4f448-49d8l   1m           1Mi
+scaletestapp-54f6c4f448-dqcx6   1m           1Mi
+scaletestapp-54f6c4f448-n6m48   1m           1Mi
+
+
+
+
+PS C:\WINDOWS\system32> kubectl describe deployment scaletestapp
+Name:                   scaletestapp
+Namespace:              default
+CreationTimestamp:      Thu, 05 Dec 2024 18:03:49 +0300
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=scaletestapp
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=scaletestapp
+  Containers:
+   scaletestapp:
+    Image:      shestera/scaletestapp
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     500m
+      memory:  30Mi
+    Requests:
+      cpu:        250m
+      memory:     10Mi
+    Liveness:     http-get http://:8080/ delay=15s timeout=1s period=20s #success=1 #failure=3
+    Readiness:    http-get http://:8080/ delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   scaletestapp-54f6c4f448 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  42m   deployment-controller  Scaled up replica set scaletestapp-54f6c4f448 to 1
+  Normal  ScalingReplicaSet  18m   deployment-controller  Scaled up replica set scaletestapp-54f6c4f448 to 3 from 1
+  Normal  ScalingReplicaSet  12m   deployment-controller  Scaled down replica set scaletestapp-54f6c4f448 to 2 from 3
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled down replica set scaletestapp-54f6c4f448 to 1 from 2
+

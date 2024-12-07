@@ -8,3 +8,5 @@
 [Exc4](https://github.com/grm000/architecture-sprint-6/blob/sprint-6/Exc4)
 # Задание 5. Проектирование GraphQL API
 [Exc5](https://github.com/grm000/architecture-sprint-6/blob/sprint-6/Exc5)
+# Задание 6. Настройка Rate Limiting
+[Exc6](https://github.com/grm000/architecture-sprint-6/blob/sprint-6/Exc6)

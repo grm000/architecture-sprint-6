@@ -1,0 +1,21 @@
+http {  
+   upstream backend_servers {
+       server be.ex.online;
+       server be1.ex.online;
+       server be2.ex.online;
+   }   
+   limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/m;
+   server {
+       listen 80;
+
+       location / {           
+           limit_req zone=api_limit burst=5 nodelay;
+           proxy_pass http://backend_servers;           
+           error_page 429 = @rate_limited;
+       }       
+       location @rate_limited {
+           add_header Retry-After 60;
+           return 429;
+       }
+   }
+}
